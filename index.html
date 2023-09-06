@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stamped Textured Tri Fill Converter</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light">
+    <div class="container mt-5">
+      <h2 class="mb-4">Stamped Textured Tri Fill Converter</h2>
+
+      <div class="card p-4">
+        <form id="converterForm">
+          <div class="form-group">
+            <label for="height">Height of Triangle:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="height"
+              name="height"
+              value="64"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="bbsize">Bounding Box Size:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="bbsize"
+              name="bbsize"
+              value="2048"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="displacement">Displacement:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="displacement"
+              name="displacement"
+              value="4"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="scalefactor">Scale Factor:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="scalefactor"
+              name="scalefactor"
+              value="0.25"
+            />
+          </div>
+
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="flipped"
+              name="flipped"
+            />
+            <label class="form-check-label" for="flipped">Flipped</label>
+          </div>
+
+          <div class="form-group">
+            <label for="source">Source Textures:</label>
+            <input
+              type="file"
+              class="form-control-file"
+              id="source"
+              name="source"
+              multiple
+              accept=".png"
+            />
+          </div>
+
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="debug"
+              name="debug"
+            />
+            <label class="form-check-label" for="debug">Debug</label>
+          </div>
+
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="outputZip"
+              name="outputZip"
+            />
+            <label class="form-check-label" for="outputZip">Zip Files?</label>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="triggerConversion()"
+          >
+            Convert
+          </button>
+        </form>
+      </div>
+
+      <!-- Container for download links -->
+      <div class="card mt-4 p-4" id="downloadContainer" style="display: none">
+        <h5>Download Links:</h5>
+        <div id="downloadLinks" class="mt-3">
+          <!-- Download links will be dynamically added here -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function triggerConversion() {
+        const height = document.getElementById("height").value;
+        const bbsize = document.getElementById("bbsize").value;
+        const displacement = document.getElementById("displacement").value;
+        const scalefactor = document.getElementById("scalefactor").value;
+        const flipped = document.getElementById("flipped").checked;
+        const debug = document.getElementById("debug").checked;
+        const outputZip = document.getElementById("outputZip").checked;
+
+        convertFiles(
+          height,
+          displacement,
+          bbsize,
+          scalefactor,
+          debug,
+          flipped,
+          outputZip
+        );
+      }
+    </script>
+    <script src="./converter.js"></script>
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  </body>
+</html>
