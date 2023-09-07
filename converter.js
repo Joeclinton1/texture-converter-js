@@ -125,8 +125,8 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     circleElem.setAttribute('cy', '50%');
     circleElem.setAttribute('r', '50%');
     circleElem.setAttribute('fill', 'none');
-    circleElem.setAttribute('stroke', 'red');
-    circleElem.setAttribute('stroke-width', '2px');
+    circleElem.setAttribute('stroke', DEBUG ? 'red' : 'none');
+    circleElem.setAttribute('stroke-width',  DEBUG ? '2px' : '0px');
     root.appendChild(circleElem);
 
     // Create triangle for clipping
