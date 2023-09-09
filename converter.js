@@ -162,11 +162,16 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     return new XMLSerializer().serializeToString(root)
 }
 
-function convertFiles(h, S, bbSize, scaleFactor, isDebug, isFlipped, outputZip, noWarp) {
+function convertFiles(h, S, bbSize, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor) {
     document.getElementById('downloadLinks').innerHTML = ''
     const fileSelector = document.getElementById('source');
     const files = fileSelector.files;
 
+    // scale triangle by triangle scale factor in a very questionable but quick to implement way
+    h_scaled = h*triScaleFactor
+    S=(S-(triScaleFactor-1)/2)*(h/h_scaled)
+    h=h_scaled
+    
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const filename = file.name.split('.').slice(0, -1).join('.');
@@ -190,7 +195,7 @@ function convertFiles(h, S, bbSize, scaleFactor, isDebug, isFlipped, outputZip, 
                         h * 2 / Math.sqrt(3),
                         h,
                         S,
-                        scaleFactor,
+                        costumeScaleFactor,
                         isDebug,
                         isFlipped
                     );

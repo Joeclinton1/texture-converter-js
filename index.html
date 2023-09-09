@@ -50,13 +50,24 @@
           </div>
 
           <div class="form-group">
-            <label for="scalefactor">Scale Factor:</label>
+            <label for="costumescalefactor">Costume Scale Factor:</label>
             <input
               type="number"
               class="form-control"
-              id="scalefactor"
-              name="scalefactor"
+              id="costumescalefactor"
+              name="costumescalefactor"
               value="0.25"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="triscalefactor">Triangle Scale Factor:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="triscalefactor"
+              name="triscalefactor"
+              value="1"
             />
           </div>
 
@@ -137,22 +148,23 @@
         const height = document.getElementById("height").value;
         const bbsize = document.getElementById("bbsize").value;
         const displacement = document.getElementById("displacement").value;
-        const scalefactor = document.getElementById("scalefactor").value;
+        const costumeScaleFactor = document.getElementById("costumescalefactor").value;
         const flipped = document.getElementById("flipped").checked;
         const debug = document.getElementById("debug").checked;
         const outputZip = document.getElementById("outputZip").checked;
         const noWarp= document.getElementById("noWarp").checked;
-
+        const triScaleFactor= document.getElementById("triscalefactor").value;
 
         convertFiles(
           height,
           displacement,
           bbsize,
-          scalefactor,
+          costumeScaleFactor,
           debug,
           flipped,
           outputZip,
-          noWarp
+          noWarp,
+          triScaleFactor
         );
       }
     </script>
