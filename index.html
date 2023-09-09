@@ -70,6 +70,17 @@
             <label class="form-check-label" for="flipped">Flipped</label>
           </div>
 
+          
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="noWarp"
+              name="noWarp"
+            />
+            <label class="form-check-label" for="noWarp">Don't warp to equilateral shape</label>
+          </div>
+
           <div class="form-group">
             <label for="source">Source Textures:</label>
             <input
@@ -130,6 +141,8 @@
         const flipped = document.getElementById("flipped").checked;
         const debug = document.getElementById("debug").checked;
         const outputZip = document.getElementById("outputZip").checked;
+        const noWarp= document.getElementById("noWarp").checked;
+
 
         convertFiles(
           height,
@@ -138,7 +151,8 @@
           scalefactor,
           debug,
           flipped,
-          outputZip
+          outputZip,
+          noWarp
         );
       }
     </script>

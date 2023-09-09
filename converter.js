@@ -43,7 +43,7 @@ function addLinkToContainer(href, download, text) {
 }
 
 
-function generateSTTFFromImage(img, original_h) {
+function generateSTTFFromImage(img, original_h, noWarp) {
     const [w, h] = [Math.round(original_h * 2 / Math.sqrt(3)), Math.round(original_h * 2 / Math.sqrt(3))];
 
     const triangles = {
@@ -54,7 +54,9 @@ function generateSTTFFromImage(img, original_h) {
     // Equilateral triangle affine transformation
     const equilateral_triangle_height = h * Math.sqrt(3) / 2;
     M = `matrix(1 0 ${0.5 * w / h} ${equilateral_triangle_height / h} ${-w / 2} ${h - equilateral_triangle_height})`;
-
+    if(noWarp){
+        M=''
+    }
     // Transformation prefix for each triangle orientation
     const CENTER = [w / 2, h - (1 / 3) * original_h];
     const STR_TRANS = `translate(0 ${-(h - equilateral_triangle_height)})`;
@@ -160,7 +162,7 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     return new XMLSerializer().serializeToString(root)
 }
 
-function convertFiles(h, S, bbSize, scaleFactor, isDebug, isFlipped, outputZip) {
+function convertFiles(h, S, bbSize, scaleFactor, isDebug, isFlipped, outputZip, noWarp) {
     document.getElementById('downloadLinks').innerHTML = ''
     const fileSelector = document.getElementById('source');
     const files = fileSelector.files;
@@ -179,7 +181,7 @@ function convertFiles(h, S, bbSize, scaleFactor, isDebug, isFlipped, outputZip) 
         reader.onload = function (e) {
             const img = new Image();
             img.onload = function () {
-                const tris = generateSTTFFromImage(img, h);
+                const tris = generateSTTFFromImage(img, h, noWarp);
                 const svgStrings = Object.entries(tris).map(([ori, tri]) => {
                     const svgString = generateSTTFSvg(
                         tri[0],
