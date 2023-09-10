@@ -71,6 +71,17 @@
             />
           </div>
 
+          <div class="form-group">
+            <label for="cutedgeoffset">Cut edge offset:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="cutedgeoffset"
+              name="cutedgeoffset"
+              value="1"
+            />
+          </div>
+
           <div class="form-group form-check">
             <input
               type="checkbox"
@@ -154,6 +165,7 @@
         const outputZip = document.getElementById("outputZip").checked;
         const noWarp= document.getElementById("noWarp").checked;
         const triScaleFactor= document.getElementById("triscalefactor").value;
+        const cutEdgeOffset= document.getElementById("cutedgeoffset").value;
 
         convertFiles(
           height,
@@ -164,7 +176,8 @@
           flipped,
           outputZip,
           noWarp,
-          triScaleFactor
+          triScaleFactor,
+          cutEdgeOffset
         );
       }
     </script>
