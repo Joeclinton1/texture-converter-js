@@ -18,17 +18,24 @@
         <form id="converterForm">
           <div class="form-group">
             <label for="height">Height of Triangle (h):</label>
-            <input
-              type="number"
-              class="form-control"
-              id="height"
-              name="height"
-              value="64"
-            />
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                id="height"
+                name="height"
+                value="64"
+              />
+              <div class="input-group-append">
+                <span class="input-group-text">px</span>
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
-            <label for="ratio">Ratio of bounding box height to triangle height (R)</label>
+            <label for="ratio"
+              >Ratio of bounding box height to triangle height (R)</label
+            >
             <input
               type="number"
               class="form-control"
@@ -40,13 +47,18 @@
 
           <div class="form-group">
             <label for="displacement">Displacement (S):</label>
-            <input
-              type="number"
-              class="form-control"
-              id="displacement"
-              name="displacement"
-              value="4"
-            />
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                id="displacement"
+                name="displacement"
+                value="4"
+              />
+              <div class="input-group-append">
+                <span class="input-group-text text-center">h</span>
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
@@ -73,13 +85,18 @@
 
           <div class="form-group">
             <label for="cutedgeoffset">Cut edge offset:</label>
-            <input
-              type="number"
-              class="form-control"
-              id="cutedgeoffset"
-              name="cutedgeoffset"
-              value="1"
-            />
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                id="cutedgeoffset"
+                name="cutedgeoffset"
+                value="1"
+              />
+              <div class="input-group-append">
+                <span class="input-group-text">px</span>
+              </div>
+            </div>
           </div>
 
           <div class="form-group form-check">
@@ -92,7 +109,6 @@
             <label class="form-check-label" for="flipped">Flipped</label>
           </div>
 
-          
           <div class="form-group form-check">
             <input
               type="checkbox"
@@ -100,7 +116,9 @@
               id="noWarp"
               name="noWarp"
             />
-            <label class="form-check-label" for="noWarp">Don't warp to equilateral shape</label>
+            <label class="form-check-label" for="noWarp"
+              >Don't warp to equilateral shape</label
+            >
           </div>
 
           <div class="form-group">
@@ -159,13 +177,14 @@
         const height = document.getElementById("height").value;
         const ratio = document.getElementById("ratio").value;
         const displacement = document.getElementById("displacement").value;
-        const costumeScaleFactor = document.getElementById("costumescalefactor").value;
+        const costumeScaleFactor =
+          document.getElementById("costumescalefactor").value;
         const flipped = document.getElementById("flipped").checked;
         const debug = document.getElementById("debug").checked;
         const outputZip = document.getElementById("outputZip").checked;
-        const noWarp= document.getElementById("noWarp").checked;
-        const triScaleFactor= document.getElementById("triscalefactor").value;
-        const cutEdgeOffset= document.getElementById("cutedgeoffset").value;
+        const noWarp = document.getElementById("noWarp").checked;
+        const triScaleFactor = document.getElementById("triscalefactor").value;
+        const cutEdgeOffset = document.getElementById("cutedgeoffset").value;
 
         convertFiles(
           height,
