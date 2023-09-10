@@ -77,16 +77,15 @@ function generateSTTFFromImage(img, original_h, noWarp) {
     return transformed_triangles;
 }
 
-function generateSTTFSvg(canvas_im, transform, R, w, h, S, scaleFactor, DEBUG, isFlipped) {
+function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEBUG, isFlipped) {
 
     // Adjusting for scale
+    bbSize*=scaleFactor
     w *= scaleFactor;
     h *= scaleFactor;
     const offset = 1 * scaleFactor;
-
-    bbSize = h*R
-    im_width = canvas_im.width
-    im_height = canvas_im.height
+    const im_width = canvas_im.width
+    const im_height = canvas_im.height
 
     // Create SVG element
     const svgNS = "http://www.w3.org/2000/svg";
@@ -162,13 +161,16 @@ function generateSTTFSvg(canvas_im, transform, R, w, h, S, scaleFactor, DEBUG, i
     return new XMLSerializer().serializeToString(root)
 }
 
-function convertFiles(h, S, ratio, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor) {
+function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor) {
     document.getElementById('downloadLinks').innerHTML = ''
     const fileSelector = document.getElementById('source');
     const files = fileSelector.files;
 
+    // calculate bbsize before triangle is scaled
+    const bbSize = h*R
+
     // scale triangle by triangle scale factor in a very questionable but quick to implement way
-    h_scaled = h*triScaleFactor
+    const h_scaled = h*triScaleFactor
     S=(S-(triScaleFactor-1)/2)*(h/h_scaled)
     h=h_scaled
     
@@ -191,7 +193,7 @@ function convertFiles(h, S, ratio, costumeScaleFactor, isDebug, isFlipped, outpu
                     const svgString = generateSTTFSvg(
                         tri[0],
                         tri[1],
-                        ratio,
+                        bbSize,
                         h * 2 / Math.sqrt(3),
                         h,
                         S,
