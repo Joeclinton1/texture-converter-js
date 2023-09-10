@@ -17,7 +17,7 @@
       <div class="card p-4">
         <form id="converterForm">
           <div class="form-group">
-            <label for="height">Height of Triangle:</label>
+            <label for="height">Height of Triangle (h):</label>
             <input
               type="number"
               class="form-control"
@@ -28,18 +28,18 @@
           </div>
 
           <div class="form-group">
-            <label for="bbsize">Bounding Box Size:</label>
+            <label for="ratio">Ratio of bounding box height to triangle height (R)</label>
             <input
               type="number"
               class="form-control"
-              id="bbsize"
-              name="bbsize"
-              value="2048"
+              id="ratio"
+              name="ratio"
+              value="32"
             />
           </div>
 
           <div class="form-group">
-            <label for="displacement">Displacement:</label>
+            <label for="displacement">Displacement (S):</label>
             <input
               type="number"
               class="form-control"
@@ -146,7 +146,7 @@
     <script>
       function triggerConversion() {
         const height = document.getElementById("height").value;
-        const bbsize = document.getElementById("bbsize").value;
+        const ratio = document.getElementById("ratio").value;
         const displacement = document.getElementById("displacement").value;
         const costumeScaleFactor = document.getElementById("costumescalefactor").value;
         const flipped = document.getElementById("flipped").checked;
@@ -158,7 +158,7 @@
         convertFiles(
           height,
           displacement,
-          bbsize,
+          ratio,
           costumeScaleFactor,
           debug,
           flipped,

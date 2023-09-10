@@ -77,14 +77,14 @@ function generateSTTFFromImage(img, original_h, noWarp) {
     return transformed_triangles;
 }
 
-function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEBUG, isFlipped) {
+function generateSTTFSvg(canvas_im, transform, R, w, h, S, scaleFactor, DEBUG, isFlipped) {
 
     // Adjusting for scale
-    bbSize *= scaleFactor;
     w *= scaleFactor;
     h *= scaleFactor;
     const offset = 1 * scaleFactor;
 
+    bbSize = h*R
     im_width = canvas_im.width
     im_height = canvas_im.height
 
@@ -162,7 +162,7 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     return new XMLSerializer().serializeToString(root)
 }
 
-function convertFiles(h, S, bbSize, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor) {
+function convertFiles(h, S, ratio, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor) {
     document.getElementById('downloadLinks').innerHTML = ''
     const fileSelector = document.getElementById('source');
     const files = fileSelector.files;
@@ -191,7 +191,7 @@ function convertFiles(h, S, bbSize, costumeScaleFactor, isDebug, isFlipped, outp
                     const svgString = generateSTTFSvg(
                         tri[0],
                         tri[1],
-                        bbSize,
+                        ratio,
                         h * 2 / Math.sqrt(3),
                         h,
                         S,
