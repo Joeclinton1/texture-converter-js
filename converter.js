@@ -37,7 +37,7 @@ function addLinkToContainer(href, download, text) {
         href,
         download,
         textContent: text,
-        className: "btn btn-primary mr-2 mb-2"
+        className: "btn btn-primary me-2 mb-2"
     });
     document.getElementById('downloadLinks').appendChild(link);
 }
