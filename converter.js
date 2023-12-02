@@ -61,17 +61,18 @@ function generateSTTFFromImage(img, original_h, noWarp) {
     const CENTER = [w / 2, h - (1 / 3) * original_h];
     const STR_TRANS = `translate(0 ${-(h - equilateral_triangle_height)})`;
     const TRANSFORM_PREFIXES = {
-        "_a": `${STR_TRANS} ${M}`,
-        "_b": `${STR_TRANS} rotate(-120 ${CENTER[0]} ${CENTER[1]}) ${M}`,
-        "_c": `${STR_TRANS} rotate(120 ${CENTER[0]} ${CENTER[1]})${M}`
+        "a": `${STR_TRANS} ${M}`,
+        "b": `${STR_TRANS} rotate(-120 ${CENTER[0]} ${CENTER[1]}) ${M}`,
+        "c": `${STR_TRANS} rotate(120 ${CENTER[0]} ${CENTER[1]})${M}`
     };
 
     // Generate the transformed triangles dictionary
     let transformed_triangles = {};
     for (let ori in triangles) {
         for (let suffix in TRANSFORM_PREFIXES) {
-            transformed_triangles[ori + suffix] = [triangles[ori], TRANSFORM_PREFIXES[suffix]];
+            transformed_triangles[(noWarp ? '' : ori+'_') + suffix] = [triangles[ori], TRANSFORM_PREFIXES[suffix]];
         }
+        if(noWarp) {break;}
     }
 
     return transformed_triangles;
@@ -131,19 +132,21 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     root.appendChild(circleElem);
 
     // Create triangle for clipping
-    const x1 = bbSize / 2;
-    const y1 = bbSize - S * h - h;
-    const x2 = bbSize / 2 + h / Math.sqrt(3);
-    const y2 = bbSize - S * h;
-    const x3 = bbSize / 2 - h / Math.sqrt(3);
-    const y3 = bbSize - S * h;
-    const clipTriangle = `<polygon fill="none" stroke="red" opacity="0.5" stroke-width="0.25px" points="${x1},${y1 - offset * Math.tan(Math.PI / 3)} ${x2 + offset * Math.tan(Math.PI / 3)},${y2 + offset} ${x3 - offset * Math.tan(Math.PI / 3)},${y3 + offset}" />`;
-    const clipPathElem = document.createElementNS(svgNS, "clipPath");
-    clipPathElem.setAttribute('id', 'cut-to-triangle');
-    clipPathElem.innerHTML = clipTriangle;
-    const defs = document.createElementNS(svgNS, "defs");
-    defs.appendChild(clipPathElem);
-    root.appendChild(defs);
+    if (!noClip){
+        const x1 = bbSize / 2;
+        const y1 = bbSize - S * h - h;
+        const x2 = bbSize / 2 + h / Math.sqrt(3);
+        const y2 = bbSize - S * h;
+        const x3 = bbSize / 2 - h / Math.sqrt(3);
+        const y3 = bbSize - S * h;
+        const clipTriangle = `<polygon fill="none" stroke="red" opacity="0.5" stroke-width="0.25px" points="${x1},${y1 - offset * Math.tan(Math.PI / 3)} ${x2 + offset * Math.tan(Math.PI / 3)},${y2 + offset} ${x3 - offset * Math.tan(Math.PI / 3)},${y3 + offset}" />`;
+        const clipPathElem = document.createElementNS(svgNS, "clipPath");
+        clipPathElem.setAttribute('id', 'cut-to-triangle');
+        clipPathElem.innerHTML = clipTriangle;
+        const defs = document.createElementNS(svgNS, "defs");
+        defs.appendChild(clipPathElem);
+        root.appendChild(defs);
+    }
 
     // For debugging
     if (DEBUG) {
@@ -161,7 +164,7 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     return new XMLSerializer().serializeToString(root)
 }
 
-function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset) {
+function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset, noClip) {
     document.getElementById('downloadLinks').innerHTML = ''
     const fileSelector = document.getElementById('source');
     const files = fileSelector.files;
@@ -200,7 +203,8 @@ function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip
                         costumeScaleFactor,
                         isDebug,
                         isFlipped,
-                        cutEdgeOffset
+                        cutEdgeOffset,
+                        noClip
                     );
                     return [svgString, `${filename}_${ori}.svg`];
                 });
