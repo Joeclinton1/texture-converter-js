@@ -78,7 +78,7 @@ function generateSTTFFromImage(img, original_h, noWarp) {
     return transformed_triangles;
 }
 
-function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEBUG, isFlipped, offset) {
+function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEBUG, isFlipped, offset, noClip) {
 
     // Adjusting for scale
     bbSize*=scaleFactor
@@ -132,6 +132,7 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     root.appendChild(circleElem);
 
     // Create triangle for clipping
+    console.log(noClip);
     if (!noClip){
         const x1 = bbSize / 2;
         const y1 = bbSize - S * h - h;
