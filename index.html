@@ -101,6 +101,22 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label for="cutedgeoffset">(Experimental Only) Outline Width:</label>
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                id="outlinewidth"
+                name="outlinewidth"
+                value="0"
+              />
+              <div class="input-group-append">
+                <span class="input-group-text">px</span>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group form-check">
             <input
               type="checkbox"
@@ -208,6 +224,7 @@
         const noClip = document.getElementById("noClip").checked;
         const triScaleFactor = document.getElementById("triscalefactor").value;
         const cutEdgeOffset = document.getElementById("cutedgeoffset").value;
+        const outlinewidth = document.getElementById("outlinewidth").value;
 
         convertFiles(
           height,
@@ -220,6 +237,7 @@
           noWarp,
           triScaleFactor,
           cutEdgeOffset,
+          outlinewidth,
           noClip
         );
       }

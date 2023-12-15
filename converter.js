@@ -78,13 +78,14 @@ function generateSTTFFromImage(img, original_h, noWarp) {
     return transformed_triangles;
 }
 
-function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEBUG, isFlipped, offset, noClip) {
+function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, costumeScaleFactor, DEBUG, isFlipped, offset, S_noOutline, h_noOutline, noClip) {
 
     // Adjusting for scale
-    bbSize*=scaleFactor
-    w *= scaleFactor;
-    h *= scaleFactor;
-    offset *= scaleFactor;
+    bbSize*=costumeScaleFactor
+    w *= costumeScaleFactor;
+    h *= costumeScaleFactor;
+    h_noOutline *= costumeScaleFactor;
+    offset *= costumeScaleFactor;
     const im_width = canvas_im.width
     const im_height = canvas_im.height
 
@@ -104,7 +105,7 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     root.appendChild(clippingGroup);
 
     // y position at bottom if not flipped else at top
-    const yTrans = isFlipped ? S * h : bbSize - S * h - h;
+    var yTrans = isFlipped ? S * h : bbSize - S * h - h;
 
     // Create image element
     const imB64 = canvas_im.toDataURL("image/png").split(',')[1];
@@ -120,6 +121,17 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     imageElem.setAttribute('preserveAspectRatio', 'none');
     clippingGroup.appendChild(imageElem);
 
+    // if there is an outline, clone the image and scale it down by the the outline width. (we previously scaled up the original image to fill the outline)
+    if(true){
+        const scaledImageElem = imageElem.cloneNode();
+        // y position at bottom if not flipped else at top
+        yTrans = isFlipped ? S_noOutline * h_noOutline : bbSize - S_noOutline * h_noOutline - h_noOutline;
+        const w_noOutline = h_noOutline * 2 / Math.sqrt(3)
+        scaledImageElem.setAttribute('transform', `translate(${bbSize / 2 - w_noOutline / 2} ${yTrans}) scale(${w_noOutline / im_width} ${w_noOutline / im_width}) ${transform}`);
+        scaledImageElem.setAttribute('id', 'innerImage')
+        clippingGroup.appendChild(scaledImageElem);
+    }
+
     // Create transparent bounding circle
     const circleElem = document.createElementNS(svgNS, "circle");
     circleElem.setAttribute('opacity', DEBUG ? '1' : '0');
@@ -132,15 +144,19 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     root.appendChild(circleElem);
 
     // Create triangle for clipping
-    console.log(noClip);
+    const x1 = bbSize / 2;
+    var y1 = bbSize - S * h - h;
+    const x2 = bbSize / 2 + h / Math.sqrt(3);
+    var y2 = bbSize - S * h;
+    const x3 = bbSize / 2 - h / Math.sqrt(3);
+    var y3 = bbSize - S * h;
+    if(isFlipped){
+        y1 = bbSize - y1 - h
+        y2 = bbSize -y2 + h
+        y3 = bbSize -y3 + h
+    }
+    const clipTriangle = `<polygon fill="none" stroke="red" opacity="0.5" stroke-width="0.25px" points="${x1},${y1 - offset * Math.tan(Math.PI / 3)} ${x2 + offset * Math.tan(Math.PI / 3)},${y2 + offset} ${x3 - offset * Math.tan(Math.PI / 3)},${y3 + offset}" />`;
     if (!noClip){
-        const x1 = bbSize / 2;
-        const y1 = bbSize - S * h - h;
-        const x2 = bbSize / 2 + h / Math.sqrt(3);
-        const y2 = bbSize - S * h;
-        const x3 = bbSize / 2 - h / Math.sqrt(3);
-        const y3 = bbSize - S * h;
-        const clipTriangle = `<polygon fill="none" stroke="red" opacity="0.5" stroke-width="0.25px" points="${x1},${y1 - offset * Math.tan(Math.PI / 3)} ${x2 + offset * Math.tan(Math.PI / 3)},${y2 + offset} ${x3 - offset * Math.tan(Math.PI / 3)},${y3 + offset}" />`;
         const clipPathElem = document.createElementNS(svgNS, "clipPath");
         clipPathElem.setAttribute('id', 'cut-to-triangle');
         clipPathElem.innerHTML = clipTriangle;
@@ -165,18 +181,30 @@ function generateSTTFSvg(canvas_im, transform, bbSize, w, h, S, scaleFactor, DEB
     return new XMLSerializer().serializeToString(root)
 }
 
-function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset, noClip) {
+function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset, outlineWidth, noClip) {
     document.getElementById('downloadLinks').innerHTML = ''
     const fileSelector = document.getElementById('source');
     const files = fileSelector.files;
 
     // calculate bbsize before triangle is scaled
-    const bbSize = h*R
+    const bbSize = h*R;
+
+    // we are going to account for the outline by initially overscaling the triangle
+    // later we'll stamp a second image ontop if the outline width isn't 0, this image will be scaled down back to the original triangle scale
+    const outlineScale = 1+2*outlineWidth/h;
+    triScaleFactor = triScaleFactor * outlineScale;
 
     // scale triangle by triangle scale factor in a very questionable but quick to implement way
-    const h_scaled = h*triScaleFactor
-    S=(S-(triScaleFactor-1)/2)*(h/h_scaled)
-    h=h_scaled
+    const h_scaled = h*triScaleFactor;
+
+    // we calculate h and S as if we hadn't scaled it by outlineScale, so we can add our original triangle ontop
+    h_noOutline =h_scaled/outlineScale;
+    S_noOutline = (S-(triScaleFactor/outlineScale-1)/2)*(h/h_noOutline);
+    
+    S=(S-(triScaleFactor-1)/2)*(h/h_scaled);
+    console.log(S, S_noOutline)
+    h=h_scaled;
+    
     
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -205,6 +233,8 @@ function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip
                         isDebug,
                         isFlipped,
                         cutEdgeOffset,
+                        S_noOutline,
+                        h_noOutline,
                         noClip
                     );
                     return [svgString, `${filename}_${ori}.svg`];
