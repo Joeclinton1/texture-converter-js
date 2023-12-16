@@ -127,7 +127,7 @@ function generateSVGContainer(bbSize,offset, h, S, costumeScaleFactor, DEBUG, nu
             y2 = bbSize - y2 + h
             y3 = bbSize - y3 + h
         }
-        const transform = `transform="rotate(${i * 360 / numTris} ${bbSize / 2} ${bbSize / 2})"`;
+        const transform = i==0 ? '' : `transform="rotate(${i * 360 / numTris} ${bbSize / 2} ${bbSize / 2})"`;
         const clipTriangle = `<polygon ${transform} fill="none" stroke="red" opacity="0.5" stroke-width="0.25px" points="${x1},${y1 - offset * Math.tan(Math.PI / 3)} ${x2 + offset * Math.tan(Math.PI / 3)},${y2 + offset} ${x3 - offset * Math.tan(Math.PI / 3)},${y3 + offset}" />`;
         clipTriangles += clipTriangle
 
@@ -143,7 +143,7 @@ function generateSVGContainer(bbSize,offset, h, S, costumeScaleFactor, DEBUG, nu
 
      // Create clipping group
      const clippingGroup = document.createElementNS(svgNS, "g");
-     clippingGroup.setAttribute('clipPath',"url(#cut-to-triangles)");
+     clippingGroup.setAttribute('clip-path',"url(#cut-to-triangles)");
 
      root.appendChild(clippingGroup);
 
@@ -164,7 +164,7 @@ function generateSTTFSvgGroup(canvas_im, transform, bbSize, w, h, S, costumeScal
     // create container for everything incase we want to pack multiple
     const svgNS = "http://www.w3.org/2000/svg";
     const mainContainer = document.createElementNS(svgNS, "g");
-    mainContainer.setAttribute('transform', `rotate(${rotation},${bbSize / 2},${bbSize / 2})`);
+    if(rotation!=0){mainContainer.setAttribute('transform', `rotate(${rotation},${bbSize / 2},${bbSize / 2})`)}
 
     // y position at bottom if not flipped else at top
     var yTrans = isFlipped ? S * h : bbSize - S * h - h;
@@ -220,9 +220,9 @@ function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip
     S = (S - (triScaleFactor - 1) / 2) * (h / h_scaled);
     h = h_scaled;
 
-    const numTris = files.length * (noWarp ? 1 : 2) * (singleTri ? 1 : 3);
-    var [svgRoot, clippingGroup] = generateSVGContainer(bbSize, cutEdgeOffset, h, S, costumeScaleFactor, isDebug, numTris, noClip, isFlipped);
-    var packIdx = 0;
+    const numTrisOnPack = packAll ? files.length * (noWarp ? 1 : 2) * (singleTri ? 1 : 3) : 1;
+    var [svgRoot, clippingGroup] = generateSVGContainer(bbSize, cutEdgeOffset, h, S, costumeScaleFactor, isDebug, numTrisOnPack, noClip, isFlipped);
+    var packIdx = 0;    
 
     for (let i = 0; i < files.length; i++) {
 
@@ -242,7 +242,7 @@ function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip
                 const tris = generateSTTFFromImage(img, h, noWarp, singleTri);
                 const svgStrings = []
                 Object.entries(tris).forEach(([ori, tri]) => {
-                    if (!packAll) { [svgRoot, clippingGroup] = generateSVGContainer(bbSize,  cutEdgeOffset, h, S, costumeScaleFactor, isDebug, numTris, noClip, isFlipped); }
+                    if (!packAll) { [svgRoot, clippingGroup] = generateSVGContainer(bbSize,  cutEdgeOffset, h, S, costumeScaleFactor, isDebug, numTrisOnPack, noClip, isFlipped); }
 
                     const sttfGroup = generateSTTFSvgGroup(
                         tri[0],
@@ -256,7 +256,7 @@ function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip
                         cutEdgeOffset,
                         S_noOutline,
                         h_noOutline,
-                        packIdx * 360 / numTris
+                        packIdx * 360 / numTrisOnPack
                     );
 
                     clippingGroup.appendChild(sttfGroup)
