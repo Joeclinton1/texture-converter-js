@@ -18,6 +18,18 @@
 
       <div class="card p-4">
         <form id="converterForm">
+          <div class="form-group mb-4">
+            <label for="source">Source Textures:</label>
+            <input
+              type="file"
+              class="form-control-file"
+              id="source"
+              name="source"
+              multiple
+              accept=".png"
+            />
+          </div>
+
           <div class="form-group">
             <label for="height">Height of Triangle (h):</label>
             <div class="input-group">
@@ -102,7 +114,9 @@
           </div>
 
           <div class="form-group">
-            <label for="cutedgeoffset">(Experimental Only) Outline Width:</label>
+            <label for="cutedgeoffset"
+              >(Experimental Only) Outline Width:</label
+            >
             <div class="input-group">
               <input
                 type="number"
@@ -151,16 +165,28 @@
             >
           </div>
 
-          <div class="form-group">
-            <label for="source">Source Textures:</label>
+          <div class="form-group form-check">
             <input
-              type="file"
-              class="form-control-file"
-              id="source"
-              name="source"
-              multiple
-              accept=".png"
+              type="checkbox"
+              class="form-check-input"
+              id="packAll"
+              name="packAll"
             />
+            <label class="form-check-label" for="packAll"
+              >Pack all textures onto one costume</label
+            >
+          </div>
+
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="singleTri"
+              name="singleTri"
+            />
+            <label class="form-check-label" for="singleTri"
+              >Single triangle STTF</label
+            >
           </div>
 
           <div class="form-group form-check">
@@ -180,12 +206,12 @@
               id="outputZip"
               name="outputZip"
             />
-            <label class="form-check-label" for="outputZip">Zip Files?</label>
+            <label class="form-check-label" for="outputZip">Zip Files</label>
           </div>
 
           <button
             type="button"
-            class="btn btn-primary"
+            class="btn btn-primary mt-3"
             onclick="triggerConversion()"
           >
             Convert
@@ -225,6 +251,8 @@
         const triScaleFactor = document.getElementById("triscalefactor").value;
         const cutEdgeOffset = document.getElementById("cutedgeoffset").value;
         const outlinewidth = document.getElementById("outlinewidth").value;
+        const packAll = document.getElementById("packAll").checked;
+        const singleTri = document.getElementById("singleTri").checked;
 
         convertFiles(
           height,
@@ -238,7 +266,9 @@
           triScaleFactor,
           cutEdgeOffset,
           outlinewidth,
-          noClip
+          noClip,
+          packAll,
+          singleTri
         );
       }
     </script>
