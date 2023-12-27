@@ -107,12 +107,6 @@ function generateSVGContainer(bbSize,offset, h, S, costumeScaleFactor, DEBUG, nu
     root.appendChild(circleElem);
 
     // Create clipping triangle (or triangles if packMult is True)
-    const defs = document.createElementNS(svgNS, "defs");
-    const clipPathElem = document.createElementNS(svgNS, "clipPath");
-    clipPathElem.setAttribute('id', `cut-to-triangles`);
-    defs.appendChild(clipPathElem)
-    root.appendChild(defs);
-
     var clipTriangles = "";
     
     for (let i = 0; i < numTris; i++) {
@@ -137,15 +131,19 @@ function generateSVGContainer(bbSize,offset, h, S, costumeScaleFactor, DEBUG, nu
         }
     }
 
+    // Create clipping group
+    const clippingGroup = document.createElementNS(svgNS, "g");
+    root.appendChild(clippingGroup);
+
     if(!noClip){
+        const defs = document.createElementNS(svgNS, "defs");
+        const clipPathElem = document.createElementNS(svgNS, "clipPath");
+        clipPathElem.setAttribute('id', `cut-to-triangles`);
+        defs.appendChild(clipPathElem)
+        root.appendChild(defs);
         clipPathElem.innerHTML = clipTriangles;
+        clippingGroup.setAttribute('clip-path',"url(#cut-to-triangles)");
     }
-
-     // Create clipping group
-     const clippingGroup = document.createElementNS(svgNS, "g");
-     clippingGroup.setAttribute('clip-path',"url(#cut-to-triangles)");
-
-     root.appendChild(clippingGroup);
 
     return [root, clippingGroup];
 }
