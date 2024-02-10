@@ -79,7 +79,7 @@ function generateSTTFFromImage(img, original_h, noWarp, singleTri) {
     return transformed_triangles;
 }
 
-function generateSVGContainer(bbSize,offset, h, S, costumeScaleFactor, DEBUG, numTris, noClip, isFlipped) {
+function generateSVGContainer(bbSize,offset, h, S, costumeScaleFactor, DEBUG, numTris, noClip, isFlipped, clipPathShape) {
     // Adjusting for scale
     bbSize *= costumeScaleFactor
     h*= costumeScaleFactor
@@ -110,19 +110,35 @@ function generateSVGContainer(bbSize,offset, h, S, costumeScaleFactor, DEBUG, nu
     var clipTriangles = "";
     
     for (let i = 0; i < numTris; i++) {
-        const x1 = bbSize / 2;
-        var y1 = bbSize - S * h - h;
-        const x2 = bbSize / 2 + h / Math.sqrt(3);
-        var y2 = bbSize - S * h;
-        const x3 = bbSize / 2 - h / Math.sqrt(3);
-        var y3 = bbSize - S * h;
-        if (isFlipped) {
-            y1 = bbSize - y1 - h
-            y2 = bbSize - y2 + h
-            y3 = bbSize - y3 + h
-        }
         const transform = i==0 ? '' : `transform="rotate(${i * 360 / numTris} ${bbSize / 2} ${bbSize / 2})"`;
-        const clipTriangle = `<polygon ${transform} fill="none" stroke="red" opacity="0.5" stroke-width="0.25px" points="${x1},${y1 - offset * Math.tan(Math.PI / 3)} ${x2 + offset * Math.tan(Math.PI / 3)},${y2 + offset} ${x3 - offset * Math.tan(Math.PI / 3)},${y3 + offset}" />`;
+        if(clipPathShape == 0){
+            const x1 = bbSize / 2;
+            var y1 = bbSize - S * h - h;
+            const x2 = bbSize / 2 + h / Math.sqrt(3);
+            var y2 = bbSize - S * h;
+            const x3 = bbSize / 2 - h / Math.sqrt(3);
+            var y3 = bbSize - S * h;
+            if (isFlipped) {
+                y1 = bbSize - y1 - h
+                y2 = bbSize - y2 + h
+                y3 = bbSize - y3 + h
+            }
+            const clipTriangle = `<polygon ${transform} fill="none" stroke="red" opacity="0.5" stroke-width="0.25px" points="${x1},${y1 - offset * Math.tan(Math.PI / 3)} ${x2 + offset * Math.tan(Math.PI / 3)},${y2 + offset} ${x3 - offset * Math.tan(Math.PI / 3)},${y3 + offset}" />`;
+        }else{
+            const x1 = bbSize / 2;
+            var y1 = bbSize - S * h - h;
+            const x2 = bbSize / 2 + h / Math.sqrt(3);
+            var y2 = bbSize - S * h;
+            const x3 = bbSize / 2 - h / Math.sqrt(3);
+            var y3 = bbSize - S * h;
+            if (isFlipped) {
+                y1 = bbSize - y1 - h
+                y2 = bbSize - y2 + h
+                y3 = bbSize - y3 + h
+            }
+            const clipTriangle = `<polygon ${transform} fill="none" stroke="red" opacity="0.5" stroke-width="0.25px" points="${x1},${y1 - offset * Math.tan(Math.PI / 3)} ${x2 + offset * Math.tan(Math.PI / 3)},${y2 + offset} ${x3 - offset * Math.tan(Math.PI / 3)},${y3 + offset}" />`;
+        }
+       
         clipTriangles += clipTriangle
 
         // Add the debugging triangles
@@ -195,7 +211,7 @@ function generateSTTFSvgGroup(canvas_im, transform, bbSize, w, h, S, costumeScal
     return mainContainer;
 }
 
-function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset, outlineWidth, noClip, packAll, singleTri) {
+function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset, outlineWidth, noClip, packAll, singleTri, clipPathShape) {
     document.getElementById('downloadLinks').innerHTML = ''
     const fileSelector = document.getElementById('source');
     const files = fileSelector.files;

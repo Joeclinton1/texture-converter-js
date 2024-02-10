@@ -114,6 +114,14 @@
           </div>
 
           <div class="form-group">
+            <label for="clipPathShape">Clip-path Shape:</label>
+            <select class="form-control" id="clipPathShape" name="clipPathShape">
+              <option value="0" selected>Equilateral Triangle</option>
+              <option value="1">Right-angle Triangle</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="cutedgeoffset"
               >(Experimental Only) Outline Width:</label
             >
@@ -253,6 +261,7 @@
         const outlinewidth = document.getElementById("outlinewidth").value;
         const packAll = document.getElementById("packAll").checked;
         const singleTri = document.getElementById("singleTri").checked;
+        const clipPathShape = document.getElementById("clipPathShape").value;
 
         convertFiles(
           height,
@@ -268,7 +277,8 @@
           outlinewidth,
           noClip,
           packAll,
-          singleTri
+          singleTri,
+          clipPathShape
         );
       }
     </script>
