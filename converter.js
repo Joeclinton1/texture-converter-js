@@ -43,7 +43,7 @@ function addLinkToContainer(href, download, text) {
 }
 
 
-function generateSTTFFromImage(img, original_h, noWarp, singleTri) {
+function generateSTTFFromImage(img, original_h, noWarp, singleTri, usePrimaryDiagonal) {
     const [w, h] = [Math.round(original_h * 2 / Math.sqrt(3)), Math.round(original_h * 2 / Math.sqrt(3))];
 
     const triangles = {
@@ -53,7 +53,8 @@ function generateSTTFFromImage(img, original_h, noWarp, singleTri) {
 
     // Equilateral triangle affine transformation
     const equilateral_triangle_height = h * Math.sqrt(3) / 2;
-    M = `matrix(1 0 ${0.5 * w / h} ${equilateral_triangle_height / h} ${-w / 2} ${h - equilateral_triangle_height})`;
+    const flipSkew = (usePrimaryDiagonal ? -1 : 1);
+    M = `matrix(1 0 ${ flipSkew * 0.5 * w / h} ${equilateral_triangle_height / h} ${-flipSkew * w / 2} ${h - equilateral_triangle_height})`;
     if (noWarp) {
         M = ''
     }
@@ -148,7 +149,7 @@ function generateSVGContainer(bbSize,offset, h, S, costumeScaleFactor, DEBUG, nu
     return [root, clippingGroup];
 }
 
-function generateSTTFSvgGroup(canvas_im, transform, bbSize, w, h, S, costumeScaleFactor, isFlipped, offset, S_noOutline, h_noOutline, rotation) {
+function generateSTTFSvgGroup(canvas_im, transform, bbSize, w, h, S, costumeScaleFactor, isFlipped, offset, S_noOutline, h_noOutline, rotation, useOutline) {
 
     // Adjusting for scale
     bbSize *= costumeScaleFactor
@@ -182,7 +183,7 @@ function generateSTTFSvgGroup(canvas_im, transform, bbSize, w, h, S, costumeScal
     mainContainer.appendChild(imageElem);
 
     // if there is an outline, clone the image and scale it down by the the outline width. (we previously scaled up the original image to fill the outline)
-    if (true) {
+    if (useOutline) {
         const scaledImageElem = imageElem.cloneNode();
         // y position at bottom if not flipped else at top
         yTrans = isFlipped ? S_noOutline * h_noOutline : bbSize - S_noOutline * h_noOutline - h_noOutline;
@@ -195,7 +196,7 @@ function generateSTTFSvgGroup(canvas_im, transform, bbSize, w, h, S, costumeScal
     return mainContainer;
 }
 
-function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset, outlineWidth, noClip, packAll, singleTri) {
+function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset, outlineWidth, noClip, packAll, singleTri, usePrimaryDiagonal) {
     document.getElementById('downloadLinks').innerHTML = ''
     const fileSelector = document.getElementById('source');
     const files = fileSelector.files;
@@ -237,7 +238,7 @@ function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip
         reader.onload = function (e) {
             const img = new Image();
             img.onload = function () {
-                const tris = generateSTTFFromImage(img, h, noWarp, singleTri);
+                const tris = generateSTTFFromImage(img, h, noWarp, singleTri, usePrimaryDiagonal);
                 const svgStrings = []
                 Object.entries(tris).forEach(([ori, tri]) => {
                     if (!packAll) { [svgRoot, clippingGroup] = generateSVGContainer(bbSize,  cutEdgeOffset, h, S, costumeScaleFactor, isDebug, numTrisOnPack, noClip, isFlipped); }
@@ -254,7 +255,8 @@ function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip
                         cutEdgeOffset,
                         S_noOutline,
                         h_noOutline,
-                        packIdx * 360 / numTrisOnPack
+                        packIdx * 360 / numTrisOnPack,
+                        outlineWidth>0
                     );
 
                     clippingGroup.appendChild(sttfGroup)

@@ -193,6 +193,18 @@
             <input
               type="checkbox"
               class="form-check-input"
+              id="usePrimaryDiagonal"
+              name="usePrimaryDiagonal"
+            />
+            <label class="form-check-label" for="usePrimaryDiagonal"
+              >Split texture along primary diagonal (BL, TR)</label
+            >
+          </div>
+
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
               id="debug"
               name="debug"
             />
@@ -253,6 +265,7 @@
         const outlinewidth = document.getElementById("outlinewidth").value;
         const packAll = document.getElementById("packAll").checked;
         const singleTri = document.getElementById("singleTri").checked;
+        const usePrimaryDiagonal = document.getElementById("usePrimaryDiagonal").checked;
 
         convertFiles(
           height,
@@ -268,7 +281,8 @@
           outlinewidth,
           noClip,
           packAll,
-          singleTri
+          singleTri,
+          usePrimaryDiagonal
         );
       }
     </script>
