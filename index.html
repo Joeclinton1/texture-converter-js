@@ -62,20 +62,24 @@
 
       function updateFormDefaultsOnShapeChange(){
         if(document.getElementById("equilateral").checked){
-          setFormValues(["displacement", "bitmap", "outputZip"], [4, false, true])
+          setFormValues(
+            ["displacement", "bitmap", "outputZip", "costumescalefactor"],
+            [4, false, true, 0.25]
+          )
         }else{
-          setFormValues(["displacement", "bitmap", "noWarp", "outputZip"], [4, true, false, false])
+          setFormValues(
+            ["displacement", "bitmap", "noWarp", "outputZip", "costumescalefactor"],
+            [4, true, false, false, 1.0]
+          )
         }
       }
 
       document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll("#converterForm input").forEach((input) => {
-          input.addEventListener("change",  (e)=>{
-            updateConstantsOnInputChange();
-            if(["equilateral", "rightAngled"].includes(e.target.id)){
-              updateFormDefaultsOnShapeChange();
-            }
+          input.addEventListener("change",  (e)=>{    
+            if(["equilateral", "rightAngled"].includes(e.target.id)) updateFormDefaultsOnShapeChange();
             updateIdVisibilityOnInputChange();
+            updateConstantsOnInputChange();
           });
         });
 
@@ -83,6 +87,7 @@
         updateConstantsOnInputChange();
         updateIdVisibilityOnInputChange()
         updateFormDefaultsOnShapeChange();
+        updateFormDefaultsOnBitmapChange();
 
       });
 
