@@ -43,6 +43,7 @@ async function generateDownloadLink(svgStrings, outputZip, filename, isBitmap, b
     const zip = new JSZip();
     const costumes = files.map(({ blob, name, assetId, centerX, centerY }) => {
       zip.file(`${assetId}.png`, blob);
+      name = name.split(".")[0];
       return { name, bitmapResolution: 1, dataFormat: "png", assetId, md5ext: `${assetId}.png`, rotationCenterX: centerX, rotationCenterY: centerY };
     });
     exportSprite3(zip, costumes);
