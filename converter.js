@@ -161,25 +161,18 @@ function generateSVGContainer(bbSize, offset, h, S, costumeScaleFactor, DEBUG, n
   // by scaling like this we can offset the cut edge for all orientations or splits, as the clippath takes care of it.
   for (let i = 0; i < numTris; i++) {
     let x1, y1, x2, y2, x3, y3;
-
+    
+    const hFlip = usePrimaryDiagonal ? -1 : 1;
     if (isRightAngled) {
-      const perpOff = offset * Math.sqrt(2)
       // Right-angled triangle points (base along the x-axis)
-      x1 = bbSize / 2 + h/2 - usePrimaryDiagonal * h; // Bottom-right corner
-      y1 = bbSize - S * h;
-      x2 = bbSize / 2 + h/2 - usePrimaryDiagonal * h; // Top-Right corner
-      y2 = bbSize - S * h - h - perpOff;
-      x3 = bbSize / 2 - h/2 + usePrimaryDiagonal * h - perpOff; // Bottom-left corner
-      y3 = bbSize - S * h;
+      x1 = bbSize / 2 + hFlip * h/2; y1 = bbSize - S * h; //bottom-right
+      x2 = bbSize / 2 + hFlip * h/2; y2 = bbSize - S * h - h; // top-right
+      x3 = bbSize / 2 - hFlip * h/2; y3 = bbSize - S * h; //bottom-left
     } else {
-      // Equilateral triangle points with offsets applied
-      const perpOff = offset * Math.tan(Math.PI/3) // 1px perp to the 60 deg side, requires 1.71px on each axis.
-      x1 = bbSize / 2 + h / Math.sqrt(3) + perpOff; // Bottom-right corner
-      y1 = bbSize - S * h + offset;
-      x2 = bbSize / 2;  // Top corner
-      y2 = bbSize - S * h - h - perpOff; 
-      x3 = bbSize / 2 - h / Math.sqrt(3) - perpOff; // Bottom-left corner
-      y3 = bbSize - S * h + offset;
+      // Equilateral triangle points with offsets applied 
+      x1 = bbSize / 2 + h / Math.sqrt(3); y1 = bbSize - S * h + offset; // bottom-right
+      x2 = bbSize / 2;  y2 = bbSize - S * h - h; //top
+      x3 = bbSize / 2 - h / Math.sqrt(3); y3 = bbSize - S * h + offset; //bottom-left
     }
 
     // Apply flipping if needed
@@ -188,9 +181,21 @@ function generateSVGContainer(bbSize, offset, h, S, costumeScaleFactor, DEBUG, n
       y2 = bbSize - y2 - h;
       y3 = bbSize - y3 + h;
     }
-    
+
     const isOdd = (triIdx === -1 ? i : triIdx) % 2 === 1;
     const baseRotation = isOdd && isRightAngled ? `rotate(${usePrimaryDiagonal ? -90 : 90} ${(x1+x3)/2} ${(y1+y2)/2})` : '';
+
+    // account for cutedge offset
+    if (isRightAngled) {
+      const perpOff = offset * Math.sqrt(2)
+      y2 -= perpOff;
+      x3 -= hFlip * perpOff;
+    }else{
+      const perpOff = offset * Math.tan(Math.PI/3) // 1px perp to the 60 deg side, requires 1.71px on each axis.
+      x1 += hFlip * perpOff
+      y2 -= perpOff;
+      x3 -= hFlip * perpOff;
+    }
     const incrementalRotation = i === 0 ? '' : `rotate(${i * 360 / numTris} ${bbSize / 2} ${bbSize / 2})`; // for packAll
     const transform = `${incrementalRotation} ${baseRotation}`.trim();
 
