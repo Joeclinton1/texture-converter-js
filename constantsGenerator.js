@@ -1,4 +1,7 @@
-function generateConstants(S, R, h, costume_scale, triangleShape) {
+function generateConstants(S, R, h, costume_scale, triangleShape, isBitmap) {
+
+  if(isBitmap) h/=2; // scratch stores costumes at half resolution for bitmap
+  
   let consts = [];
 
   switch (triangleShape) {
@@ -40,10 +43,11 @@ function updateConstantsOnInputChange(_) {
   const displacement = document.getElementById("displacement").value;
   const costumeScaleFactor = document.getElementById("bitmap").checked ? 1 : document.getElementById("costumescalefactor").value;
   const triangleShape = document.querySelector('input[name="triangleType"]:checked').id
+  const isBitmap = document.getElementById("bitmap").checked;
 
   const constantsElement = document.getElementById("constants")
   constantsElement.innerHTML = ''
-  constants = generateConstants(displacement, ratio, height, costumeScaleFactor, triangleShape)
+  constants = generateConstants(displacement, ratio, height, costumeScaleFactor, triangleShape, isBitmap)
   for (let constant of constants) {
     constantsElement.insertAdjacentHTML('beforeend', `<li class="list-group-item"><span class="text-primary">${constant}</span></li>`);
   }
