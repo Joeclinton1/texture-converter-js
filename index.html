@@ -58,6 +58,7 @@
         if(rightAngled) setDisplayMult(["noWarp"], false);
         if(equilateral) setDisplayMult(["bitmap"], false);
         if(bitmap) setDisplayMult([ "costumescalefactor", "outlinewidth", "triscalefactor"], false);
+        if(!bitmap) setDisplayMult(["useCornerPixels", false])
       }
 
       function updateFormDefaultsOnShapeChange(){
@@ -92,7 +93,7 @@
 
       function triggerConversion() {
         formIds = ["height", "displacement", "ratio", "costumescalefactor", "debug", "flipped", "outputZip", "noWarp",  "triscalefactor",
-        "cutedgeoffset", "outlinewidth", "noClip", "packAll", "singleTri", "usePrimaryDiagonal", "rightAngled", "bitmap"
+        "cutedgeoffset", "outlinewidth", "noClip", "packAll", "singleTri", "usePrimaryDiagonal", "rightAngled", "bitmap", "useCornerPixels"
         ]
         convertFiles(
           ...formIds.map(id => document.getElementById(id)[["checkbox", "radio"].includes(document.getElementById(id).type) ? "checked" : "value"])
@@ -314,6 +315,19 @@
             />
             <label class="form-check-label" for="usePrimaryDiagonal"
               >Split texture along primary diagonal (BL, TR)</label
+            >
+          </div>
+
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              id="useCornerPixels"
+              name="useCornerPixels"
+              checked
+            />
+            <label class="form-check-label" for="useCornerPixels"
+              >Add transparent pixels at corners</label
             >
           </div>
 

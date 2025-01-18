@@ -1,4 +1,4 @@
-async function generateDownloadLink(svgStrings, outputZip, filename, isBitmap, bbsize) {
+async function generateDownloadLink(svgStrings, outputZip, filename, isBitmap, bbsize, useCornerPixels) {
   const createLink = (url, name) => addLinkToContainer(url, name, name);
 
   // Convert SVG to PNG and return data for sprite or PNG export
@@ -8,7 +8,15 @@ async function generateDownloadLink(svgStrings, outputZip, filename, isBitmap, b
     await img.decode();
     const canvas = document.createElement("canvas");
     canvas.width = img.width; canvas.height = img.height;
-    canvas.getContext("2d").drawImage(img, 0, 0);
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    if (isBitmap && useCornerPixels) {
+      ctx.fillStyle = "rgba(255, 255, 255, 1)";
+      ctx.fillRect(0, 0, 1, 1);
+      ctx.fillRect(canvas.width - 1, 0, 1, 1);
+      ctx.fillRect(0, canvas.height - 1, 1, 1);
+      ctx.fillRect(canvas.width - 1, canvas.height - 1, 1, 1);
+    }
     const assetId = [...Array(32)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
     return new Promise(resolve => canvas.toBlob(blob => resolve({
       blob, name: name.replace('.svg', '.png'), assetId, centerX: img.width / 2, centerY: img.height / 2
@@ -274,7 +282,10 @@ function generateSTTFSvgGroup(canvas_im, transform, bbSize, w, h, S, costumeScal
   return mainContainer;
 }
 
-function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip, noWarp, triScaleFactor, cutEdgeOffset, outlineWidth, noClip, packAll, singleTri, usePrimaryDiagonal, isRightAngled, isBitmap) {
+function convertFiles(
+  h, S, R, costumeScaleFactor, isDebug, isFlipped, 
+  outputZip, noWarp, triScaleFactor, cutEdgeOffset, outlineWidth, noClip, 
+  packAll, singleTri, usePrimaryDiagonal, isRightAngled, isBitmap, useCornerPixels) {
   // Some values don't apply to bitmap and need to be set back to default
   if(isBitmap){
     costumeScaleFactor = 1.0;
@@ -348,7 +359,7 @@ function convertFiles(h, S, R, costumeScaleFactor, isDebug, isFlipped, outputZip
 
           packIdx += 1;
         });
-        if (svgStrings.length>0) generateDownloadLink(svgStrings, outputZip, filename, isBitmap, bbSize);
+        if (svgStrings.length>0) generateDownloadLink(svgStrings, outputZip, filename, isBitmap, bbSize, useCornerPixels);
       }
       img.src = e.target.result;
     }
